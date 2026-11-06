@@ -1,4 +1,5 @@
 import torch
+import pygame
 import random
 import numpy as np
 from collections import deque
@@ -9,6 +10,7 @@ from helper import plot
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
 LR = 0.001
+NUM_GAMES = 200
 
 class Agent:
 
@@ -117,13 +119,23 @@ def train():
                 record = score
                 agent.model.save()
 
-            print('Game', agent.n_games, 'Score', score, 'Record:', record)
-
             plot_scores.append(score)
             total_score += score
             mean_score = total_score / agent.n_games
+            print(
+                f'After {agent.n_games} games: best score = {record}, '
+                f'average score = {mean_score:.2f} (latest = {score})'
+            )
             plot_mean_scores.append(mean_score)
             plot(plot_scores, plot_mean_scores)
+
+            if agent.n_games >= NUM_GAMES:
+                print(
+                    f'Final after {NUM_GAMES} games: best score = {record}, '
+                    f'average score = {mean_score:.2f}'
+                )
+                pygame.quit()
+                return
 
 
 if __name__ == '__main__':
